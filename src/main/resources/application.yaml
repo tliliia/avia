@@ -9,6 +9,8 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+ticket:
+  comission:0.025
 #flyway:
 #  url: jdbc:postgresql://localhost:5432/avia
 #  schemas: public
