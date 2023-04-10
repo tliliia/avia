@@ -29,4 +29,16 @@ public class TicketService extends AbstractService<Ticket, TicketRepository> {
         entity.setCommission(true);
         return repository.save(entity);
     }
+
+    public Long countTicketsFromDeparture(String name) {
+        return repository.countTicketsFromDeparture(name);
+    }
+
+    public Long countTicketsFromAirline(String name) {
+        return repository.countTicketsFromAirline(name);
+    }
+
+    public Long countAvgOfComission() {
+        return repository.countAvgOfComission();
+    }
 }

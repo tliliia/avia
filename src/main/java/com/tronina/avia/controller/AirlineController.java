@@ -23,6 +23,12 @@ public class AirlineController extends AbstractController<Airline, AirlineServic
         return ResponseEntity.ok(service.findPlanesOfAirline(id));
     }
 
+//    @Operation(summary = "количество самолётов у каждой авиакомпании")
+    @GetMapping("/{id}/airplanes_count")
+    public ResponseEntity<Long> getPlanesAmountOfAirline(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.ok(service.findPlanesAmountOfAirline(id));
+    }
+
 //    @Operation(summary = "Добавить самолет в авикомпанию")
     @PostMapping("/{id}/airplanes")
     public ResponseEntity<Airplane> addAirplane(@PathVariable(name = "id") Long id, @RequestBody Airplane element) {

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AirplaneRepository extends BaseRepository<Airplane> {
     List<Airplane> findAllByAirlineId(Long id);
+    Long countAirplanesByAirlineId(Long id);
 }

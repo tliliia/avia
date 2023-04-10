@@ -24,9 +24,14 @@ public class AirlineService extends AbstractService<Airline, AirlineRepository> 
         return airplaneRepository.findAllByAirlineId(id);
     }
 
+    public Long findPlanesAmountOfAirline(Long id) {
+        return airplaneRepository.countAirplanesByAirlineId(id);
+    }
+
     public Airplane addPlaneToAirline(Long id, Airplane element) {
         Airline airline = findById(id);
         airline.getAirplanes().add(element);
         return airplaneRepository.save(element);
     }
+
 }
