@@ -1,8 +1,9 @@
 package com.tronina.avia.service;
 
-import com.tronina.avia.entity.BaseEntity;
+import com.tronina.avia.model.entity.BaseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CrudService<E extends BaseEntity> {
     /**
@@ -10,7 +11,7 @@ public interface CrudService<E extends BaseEntity> {
      * @param id идентификатор элемента
      * @return элемент
      */
-    E findById(Long id);
+    Optional<E> findById(Long id);
 
     /**
      * Получить список всех эдементов в репозитории
@@ -39,7 +40,7 @@ public interface CrudService<E extends BaseEntity> {
     void delete(E entity);
 
     /**
-     * Удалиьт элент по соответсвующему идентификатору
+     * Удалить элент по соответсвующему идентификатору
      * @param id идентификатор элемента
      */
     void deleteById(Long id);

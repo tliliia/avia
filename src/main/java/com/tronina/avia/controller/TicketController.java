@@ -1,6 +1,6 @@
 package com.tronina.avia.controller;
 
-import com.tronina.avia.entity.Ticket;
+import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.service.impl.TicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tickets")
-public class TicketController extends AbstractController<Ticket, TicketService> {
+public class TicketController {
+    /*
 
     public TicketController(TicketService service) {
         super(service);
@@ -37,4 +38,6 @@ public class TicketController extends AbstractController<Ticket, TicketService> 
     public ResponseEntity<Long> countAvgOfComission() {
         return ResponseEntity.ok(service.countAvgOfComission());
     }
+
+     */
 }
