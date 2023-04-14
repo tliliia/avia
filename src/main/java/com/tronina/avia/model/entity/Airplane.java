@@ -1,12 +1,10 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model.entity;
 
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -30,9 +28,20 @@ public class Airplane extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "airplane", cascade = CascadeType.ALL)
-    private List<Flight> flights = new ArrayList<>();
+    private Set<Flight> flights = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "airline_id")
     private Airline airline;
+
+    @Override
+    public BaseEntity updateFields(BaseEntity from) {
+        if (from instanceof Airplane) {
+            this.setBrand(((Airplane) from).getBrand());
+            this.setModel(((Airplane) from).getModel());
+            this.setSeats(((Airplane) from).getSeats());
+        }
+        return this;
+    }
+
 }
