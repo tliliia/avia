@@ -1,5 +1,6 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model;
 
+import com.tronina.avia.model.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,9 @@ public class LogMessage extends BaseEntity {
 
     @Column(name = "time")
     private Timestamp time;
+
+    @Override
+    public BaseEntity updateFields(BaseEntity from) {
+        return from;
+    }
 }

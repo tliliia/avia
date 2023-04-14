@@ -1,4 +1,4 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model.entity;
 
 public enum Status {
     CREATED,

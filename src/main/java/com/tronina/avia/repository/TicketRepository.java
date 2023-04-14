@@ -1,9 +1,12 @@
 package com.tronina.avia.repository;
 
-import com.tronina.avia.entity.Ticket;
+import com.tronina.avia.model.entity.Airplane;
+import com.tronina.avia.model.entity.Ticket;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface TicketRepository extends BaseRepository<Ticket> {
@@ -20,4 +23,6 @@ public interface TicketRepository extends BaseRepository<Ticket> {
 
     @Query(value = "SELECT AVG(t.price) FROM tickets t where t.status = 'SOLD' and t.commission = true", nativeQuery = true)
     Long countAvgOfComission();
+
+    List<Ticket> findAllByFlightId(Long id);
 }
