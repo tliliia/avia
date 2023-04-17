@@ -15,7 +15,7 @@ import java.util.List;
 public interface TicketMapper {
     TicketMapper INSTANCE = Mappers.getMapper(TicketMapper.class);
 
-    @Mapping(target = "flight", ignore = true)
+    @Mapping(target = "id", source = "id", ignore = true)
     TicketDto toDto(Ticket e);
 
     List<TicketDto> toDtoList(List<Ticket> e);
