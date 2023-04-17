@@ -11,6 +11,9 @@ spring:
     show-sql: true
 ticket:
   comission: 0.025
+jwt:
+  secret: secret
+  duration: 20
 #flyway:
 #  url: jdbc:postgresql://localhost:5432/avia
 #  schemas: public
