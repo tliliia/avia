@@ -5,14 +5,10 @@ import com.tronina.avia.model.dto.TicketDto;
 import com.tronina.avia.model.entity.Flight;
 import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
-import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.model.mapper.TicketMapper;
 import com.tronina.avia.repository.TicketRepository;
-import com.tronina.avia.service.AbstractService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,7 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TicketService {
     private final TicketRepository repository;
     private final LoggingService logging;
-    private final TicketMapper mapper;
+    private final TicketMapper mapper = TicketMapper.INSTANCE;
     
     @Value("${ticket.comission}")
     private String ticketComission;
