@@ -18,5 +18,7 @@ public abstract class BaseEntity implements Serializable {
   @Column(name = "id")
   protected Long id;
 
-  abstract public BaseEntity updateFields(BaseEntity from);
+  public BaseEntity updateFields(BaseEntity from) {
+      return from;
+  }
 }
