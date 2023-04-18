@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "account")
+@Table(name = "customer")
 public class Customer extends BaseEntity {
 
     @Override

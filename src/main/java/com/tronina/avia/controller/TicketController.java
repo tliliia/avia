@@ -1,14 +1,23 @@
 package com.tronina.avia.controller;
 
+import com.tronina.avia.model.dto.TicketDto;
 import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.service.impl.TicketService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
+
+    private final TicketService service;
+
     /*
 
     public TicketController(TicketService service) {
@@ -40,4 +49,16 @@ public class TicketController {
     }
 
      */
+
+    @GetMapping("/tickets")
+    public ResponseEntity<List<TicketDto>>showFreeTickets() {
+        return ResponseEntity.ok(service.finadAllAvailableTickets(true));
+    }
+
+    @PutMapping("/tickets/{id}/target")
+    public ResponseEntity<?>showFreeTickets(@PathVariable Long id) {
+//        return service.reserveTicket(id);buyTicket;confirmTicket;confirmPurchase
+        return null;
+    }
+
 }

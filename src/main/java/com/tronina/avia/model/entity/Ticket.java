@@ -38,4 +38,8 @@ public class Ticket extends BaseEntity {
     public BaseEntity updateFields(BaseEntity from) {
         return from;
     }
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }
