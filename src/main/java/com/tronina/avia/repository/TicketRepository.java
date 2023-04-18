@@ -1,11 +1,12 @@
 package com.tronina.avia.repository;
 
-import com.tronina.avia.model.entity.Airplane;
+import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -25,4 +26,16 @@ public interface TicketRepository extends BaseRepository<Ticket> {
     Long countAvgOfComission();
 
     List<Ticket> findAllByFlightId(Long id);
+
+    @Query(value = "select * from tickets t join flights f on f.id = t.flight_id where t.status = 'CREATED' and f.arrival_time > :date",
+            nativeQuery = true)
+    List<Ticket> findAllAvailableOnDate(LocalDateTime date);
+
+    @Query(value = "select * from airlines a" +
+            " join airplanes p on p.airline_id = a.id" +
+            " join flights f on f.airplane_id = p.id" +
+            " join tickets t on t.flight_id = f.id" +
+            " where a.name = :airline and t.status in (:states) ", nativeQuery = true)
+    List<Ticket> findAllAvailable(String airline, List<Status> states);
+
 }

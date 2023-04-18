@@ -3,6 +3,7 @@ package com.tronina.avia.controller;
 import com.tronina.avia.model.dto.AirlineDto;
 import com.tronina.avia.model.dto.AirplaneDto;
 import com.tronina.avia.service.impl.AirlineService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +18,19 @@ public class AirlineController {
 
     private final AirlineService service;
 
-    //    @Operation(summary = "Получить самолеты авикомпании")
+    @Operation(summary = "Получить самолеты авикомпании")
     @GetMapping("/{id}/airplanes")
     public ResponseEntity<List<AirplaneDto>> getPlanesOfAirline(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(service.findPlanesOfAirline(id));
     }
 
-    //    @Operation(summary = "количество самолётов у каждой авиакомпании")
+    @Operation(summary = "Получить количество самолётов у авиакомпании")
     @GetMapping("/{id}/airplanes_count")
     public ResponseEntity<Long> getPlanesAmountOfAirline(@PathVariable(name = "id") Long id) {
         return ResponseEntity.ok(service.findPlanesAmountOfAirline(id));
     }
 
-    //    @Operation(summary = "Добавить самолет в авикомпанию")
+    @Operation(summary = "Добавить самолет в авикомпанию")
     @PostMapping("/{id}/airplane")
     public ResponseEntity<AirplaneDto> addAirplane(@PathVariable(name = "id") Long id, @RequestBody AirplaneDto element) {
         return new ResponseEntity(service.addPlaneToAirline(id, element), HttpStatus.CREATED);

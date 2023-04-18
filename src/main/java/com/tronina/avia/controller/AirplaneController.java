@@ -18,6 +18,7 @@ public class AirplaneController {
 
     private final AirplaneService service;
 
+    //crud
     @GetMapping("/{id}")
     public ResponseEntity<AirplaneDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
