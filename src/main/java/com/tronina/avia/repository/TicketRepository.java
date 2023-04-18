@@ -25,4 +25,8 @@ public interface TicketRepository extends BaseRepository<Ticket> {
     Long countAvgOfComission();
 
     List<Ticket> findAllByFlightId(Long id);
+
+    @Query(value = "SELECT t.* FROM tickets t where t.status = 'CREATED'", nativeQuery = true)
+    List<Ticket> findAllAvailable();
+
 }

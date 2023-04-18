@@ -9,6 +9,7 @@ import com.tronina.avia.model.mapper.TicketMapper;
 import com.tronina.avia.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,6 +29,68 @@ public class TicketService {
     
     @Value("${ticket.comission}")
     private String ticketComission;
+
+    //non auth
+    public List<TicketDto> finadAllAvailableTickets(boolean status) {//todo:
+        return mapper.toDtoList(repository.findAllAvailable());
+    }
+
+    //user
+    @Transactional
+    public TicketDto reserveTicket(Long id) {
+        Optional<Ticket> optionalE = repository.findById(id);
+        if (optionalE.isPresent()) {
+            return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVED));
+        } else {
+            throw new RuntimeException("Error");
+        }
+    }
+
+    @Transactional
+    public TicketDto buyTicket(TicketDto dto) {
+        Optional<Ticket> optionalE = repository.findById(dto.getId());
+        if (optionalE.isPresent()) {
+            return mapper.toDto(changeTicketStatus(optionalE.get(), Status.SOLD));
+        } else {
+            throw new RuntimeException("Error");
+        }
+    }
+
+    @Transactional
+    public TicketDto confirmTicket(TicketDto dto, boolean confirmed) {
+        Optional<Ticket> optionalE = repository.findById(dto.getId());
+        if (optionalE.isPresent()) {
+            if (confirmed) {
+                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVATION_CONFIRMED));
+            } else {
+                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.CREATED));
+            }
+        } else {
+            throw new RuntimeException("Error");
+        }
+    }
+
+    @Transactional
+    protected Ticket changeTicketStatus(Ticket entity, Status status) {
+//            entity.setCustomer();
+        switch (status) {
+            case RESERVED:
+                entity.setStatus(Status.RESERVED);
+                break;
+            case RESERVATION_CONFIRMED:
+                entity.setStatus(Status.RESERVATION_CONFIRMED);
+                break;
+            case SOLD:
+                if (entity.getStatus() == Status.RESERVATION_CONFIRMED) {
+                    entity.setStatus(Status.SOLD);
+                }
+                break;
+            default:
+                break;
+        }
+        return repository.save(entity);
+    }
+
 
     private Ticket applyComission(Ticket entity) {
         Double multiplyer = 1L + Double.parseDouble(ticketComission);
@@ -58,6 +121,7 @@ public class TicketService {
         return mapper.toDtoList(repository.findAllByFlightId(entity.getId()));
     }
 
+    //AGENT
     public Long countTicketsFromDeparture(String name) {
         return repository.countTicketsFromDeparture(name);
     }
