@@ -4,8 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 
 @Data
 @AllArgsConstructor
@@ -13,12 +18,7 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name = "customer")
-public class Customer extends BaseEntity {
-
-    @Override
-    public BaseEntity updateFields(BaseEntity from) {
-        return from;
-    }
+public class Customer extends BaseEntity implements UserDetails {
 
     public enum Role {
         ADMIN,
@@ -26,7 +26,7 @@ public class Customer extends BaseEntity {
         SALESMAN,
         USER,
         MANAGER
-        }
+    }
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -37,4 +37,41 @@ public class Customer extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @Override
+    public BaseEntity updateFields(BaseEntity from) {
+        return from;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
 }

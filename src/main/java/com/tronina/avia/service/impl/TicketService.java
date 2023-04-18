@@ -2,62 +2,61 @@ package com.tronina.avia.service.impl;
 
 import com.tronina.avia.exception.NotFoundEntityException;
 import com.tronina.avia.model.dto.TicketDto;
+import com.tronina.avia.model.entity.Customer;
 import com.tronina.avia.model.entity.Flight;
 import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.model.mapper.TicketMapper;
 import com.tronina.avia.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
 public class TicketService {
     private final TicketRepository repository;
     private final LoggingService logging;
+    private final ReservationService reservationService;
+    private final CustomerService customerService;
+    private final OrderService orderService;
+
     private final TicketMapper mapper = TicketMapper.INSTANCE;
-    
-    @Value("${ticket.comission}")
-    private String ticketComission;
 
-    private Ticket applyComission(Ticket entity) {
-        Double multiplyer = 1L + Double.parseDouble(ticketComission);
-        entity.setPrice(entity.getPrice().multiply(BigDecimal.valueOf(multiplyer)));
-        entity.setCommission(true);
-        return entity;
+
+    /**
+     * Неавторизованные пользователи могут только просматривать доступные билеты.
+     * @param actualDate
+     * @return
+     */
+    public List<TicketDto> findAllAvailableTickets(LocalDateTime actualDate) {
+        return mapper.toDtoList(repository.findAllAvailableOnDate(actualDate));
     }
 
-
-    public List<TicketDto> buildTicketsForFligth(Integer seats, Flight entity, BigDecimal baseRate) {
-        //crete tickets with plane.seatsNo + comission
-        Set<Ticket> tickets = new HashSet<>();
-        int randomNum = ThreadLocalRandom.current().nextInt(0, seats + 1);
-        for (int i = 0; i < seats; i++) {
-            Ticket ticket = Ticket.builder()
-                    .number(i)
-                    .flight(entity)
-                    .status(Status.CREATED)
-                    .price(baseRate)
-                    .build();
-            if (i == randomNum) {
-                ticket = applyComission(ticket);
-            }
-            tickets.add(ticket);
+    /**
+     * Проданные билеты не должны отображаться в списке у представителя,
+     * если в запросе не был передан соответствующий флаг
+     * @param airlineName название авиакомпании представителя
+     * @param showSold
+     * @return
+     */
+    public List<TicketDto>finadAllForAgent(String airlineName, boolean showSold) {
+        List<Status> values = new ArrayList<>(Arrays.asList(Status.values()));
+        if (!showSold) {
+            values.removeIf(v -> v.equals(Status.SOLD));
         }
-
-        tickets.forEach(t -> repository.save(t));
-        return mapper.toDtoList(repository.findAllByFlightId(entity.getId()));
+        return mapper.toDtoList(repository.findAllAvailable(airlineName, values));
     }
 
+    /**
+     * Представитель авиакомпании - может смотреть статистику продаж своей авиакомпании.
+     * @param name название авиакомпании
+     * @return
+     */
     public Long countTicketsFromDeparture(String name) {
         return repository.countTicketsFromDeparture(name);
     }
@@ -66,9 +65,57 @@ public class TicketService {
         return repository.countTicketsFromAirline(name);
     }
 
-    public Long countAvgOfComission() {
-        return repository.countAvgOfComission();
+    public Long countAvgOfComission(String name) {
+        return repository.countAvgOfComission(name);
     }
+
+    //user
+    //Покупатель - может забронировать билет, но не может купить до подтверждения кассиром
+    @Transactional
+    public void doReservation(Long id, Customer customer) {
+        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        reservationService.doReservation(ticket, customer);
+    }
+
+    //Кассир - может продавать билеты, а также снимать статус “забронирован”
+    @Transactional
+    public TicketDto confirmReservation(Long id, boolean confirmed) {
+//        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+//            if (confirmed) {
+//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVATION_CONFIRMED));
+//            } else {
+//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.CREATED));
+//            }
+        return null;
+    }
+
+    @Transactional
+    public void makeOrder(Long id, Customer customer, String promo) {
+        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        orderService.makeOrder(ticket, customer, promo);
+    }
+
+    @Transactional
+    protected Ticket changeTicketStatus(Ticket entity, Status status) {
+//            entity.setCustomer();
+        switch (status) {
+            case RESERVED:
+                entity.setStatus(Status.RESERVED);
+                break;
+            case RESERVATION_CONFIRMED:
+                entity.setStatus(Status.RESERVATION_CONFIRMED);
+                break;
+            case SOLD:
+                if (entity.getStatus() == Status.RESERVATION_CONFIRMED) {
+                    entity.setStatus(Status.SOLD);
+                }
+                break;
+            default:
+                break;
+        }
+        return repository.save(entity);
+    }
+
 
     //crud
     private Optional<Ticket> findById(Long id) {
@@ -121,4 +168,26 @@ public class TicketService {
         }
     }
 
+    public List<TicketDto> getTicketsOfFligth(Long id) {
+        return mapper.toDtoList(repository.findAllByFlightId(id));
+    }
+    @Transactional
+    public List<TicketDto> buildTicketsForFligth(Integer seats, Flight entity, BigDecimal baseRate) {
+        //crete tickets with plane.seatsNo + comission
+        int changeIndex = (int)(seats * 0.75);
+        Set<Ticket> tickets = new HashSet<>();
+        for (int i = 0; i < seats; i++) {
+            boolean applyComission = i > changeIndex;
+            Ticket ticket = Ticket.builder()
+                    .number(i)
+                    .flight(entity)
+                    .status(Status.CREATED)
+                    .commission(applyComission)
+                    .price(priceUtil.applyComission(baseRate, applyComission))
+                    .build();
+            tickets.add(ticket);
+        }
+
+        return mapper.toDtoList(repository.saveAll(tickets));
+    }
 }

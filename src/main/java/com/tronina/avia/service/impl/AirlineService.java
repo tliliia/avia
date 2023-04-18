@@ -45,12 +45,8 @@ public class AirlineService {
     }
 
     public AirlineDto getById(Long id) {
-        Optional<Airline> optionalE = repository.findById(id);
-        if (optionalE.isPresent()) {
-            return mapper.toDto(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Airline entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        return mapper.toDto(entity);
     }
 
     public List<AirlineDto> findAll() {
@@ -64,28 +60,14 @@ public class AirlineService {
 
     @Transactional
     public AirlineDto update(Long id, AirlineDto dto) {
-        Optional<Airline> originalEntity = findById(id);
-        if (originalEntity.isPresent()) {
-            Airline updated = (Airline) originalEntity.get().updateFields(mapper.toEntity(dto));
-            return mapper.toDto(repository.save(updated));
-        } else {
-            throw new NotFoundEntityException(id);
-        }
-    }
-
-    @Transactional
-    protected void delete(Airline entity) {
-        repository.delete(entity);
-        logging.logDelete(entity);
+        Airline entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        Airline updated = (Airline)entity.updateFields(mapper.toEntity(dto));
+        return mapper.toDto(repository.save(updated));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        Optional<Airline> optionalE = findById(id);
-        if (optionalE.isPresent()) {
-            delete(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Airline entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        repository.delete(entity);
     }
 }

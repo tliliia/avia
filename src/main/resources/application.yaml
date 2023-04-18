@@ -9,6 +9,9 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 ticket:
   comission: 0.025
 jwt:

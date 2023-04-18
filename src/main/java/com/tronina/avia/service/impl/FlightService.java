@@ -25,12 +25,6 @@ public class FlightService {
 
     private final TicketService ticketService;
 
-    public FlightDto setPlaneToFlight(Airplane plane, FlightDto dto) {
-        Flight entity = mapper.toEntity(dto);
-        entity.setAirplane(plane);
-        return mapper.toDto(repository.save(entity));// проставилось id
-    }
-
     //базовая стоиомость для данного рейса на данном самолете
     @Transactional
     public FlightDto buildFligthWithTickets(Airplane plane, FlightDto dto, BigDecimal price) {
@@ -47,12 +41,8 @@ public class FlightService {
     }
 
     public FlightDto getById(Long id) {
-        Optional<Flight> optionalE = repository.findById(id);
-        if (optionalE.isPresent()) {
-            return mapper.toDto(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Flight entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        return mapper.toDto(entity);
     }
 
     public List<FlightDto> findAll() {
@@ -60,36 +50,17 @@ public class FlightService {
     }
 
     @Transactional
-    public FlightDto create(FlightDto dto) {
-        return mapper.toDto(repository.save(mapper.toEntity(dto)));
-    }
-
-    @Transactional
     public FlightDto update(Long id, FlightDto dto) {
-        Optional<Flight> originalEntity = findById(id);
-        if (originalEntity.isPresent()) {
-            Flight updated = (Flight) originalEntity.get().updateFields(mapper.toEntity(dto));
-            return mapper.toDto(repository.save(updated));
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Flight entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        Flight updated = (Flight) entity.updateFields(mapper.toEntity(dto));
+        return mapper.toDto(repository.save(updated));
     }
 
-    @Transactional
-    public void delete(FlightDto dto) {
-        Flight entity = mapper.toEntity(dto);
-        repository.delete(entity);
-        logging.logDelete(entity);
-    }
 
     @Transactional
     public void deleteById(Long id) {
-        Optional<Flight> optionalE = findById(id);
-        if (optionalE.isPresent()) {
-            repository.delete(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Flight entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        repository.delete(entity);
     }
 
 }

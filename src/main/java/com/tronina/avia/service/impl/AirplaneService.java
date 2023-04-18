@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,13 +39,10 @@ public class AirplaneService {
         return mapper.toDto(repository.save(entity));
     }
 
-    public FlightDto addFligth(Long id, FlightDto flightDto) {
-        Optional<Airplane> optionalPlane = findById(id);
-        if (optionalPlane.isPresent()) {
-            return flightService.setPlaneToFlight(optionalPlane.get(), flightDto);
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+    @Transactional
+    public FlightDto buildFligthWithTickets(Long id, FlightDto flightDto, BigDecimal price) {
+        Airplane plane = findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        return flightService.buildFligthWithTickets(plane, flightDto, price);
     }
 
     //crud
@@ -53,12 +51,8 @@ public class AirplaneService {
     }
 
     public AirplaneDto getById(Long id) {
-        Optional<Airplane> optionalE = repository.findById(id);
-        if (optionalE.isPresent()) {
-            return mapper.toDto(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Airplane entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        return mapper.toDto(entity);
     }
 
     public List<AirplaneDto> findAll() {
@@ -66,36 +60,17 @@ public class AirplaneService {
     }
 
     @Transactional
-    public AirplaneDto create(AirplaneDto dto) {
-        return mapper.toDto(repository.save(mapper.toEntity(dto)));
-    }
-
-    @Transactional
     public AirplaneDto update(Long id, AirplaneDto dto) {
-        Optional<Airplane> originalEntity = findById(id);
-        if (originalEntity.isPresent()) {
-            Airplane updated = (Airplane) originalEntity.get().updateFields(mapper.toEntity(dto));
-            return mapper.toDto(repository.save(updated));
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Airplane entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        Airplane updated = (Airplane) entity.updateFields(mapper.toEntity(dto));
+        return mapper.toDto(repository.save(updated));
     }
 
-    @Transactional
-    public void delete(AirplaneDto dto) {
-        Airplane entity = mapper.toEntity(dto);
-        repository.delete(entity);
-        logging.logDelete(entity);
-    }
 
     @Transactional
     public void deleteById(Long id) {
-        Optional<Airplane> optionalE = findById(id);
-        if (optionalE.isPresent()) {
-            repository.delete(optionalE.get());
-        } else {
-            throw new NotFoundEntityException(id);
-        }
+        Airplane entity = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        repository.delete(entity);
     }
 
 }

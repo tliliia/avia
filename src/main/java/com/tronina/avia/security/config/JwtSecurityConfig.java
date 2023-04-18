@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -23,8 +24,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class JwtSecurityConfig {
     public static final String AUTHENTICATION_URL = "/jwttoken";
+    public static final String SWAGGER_URL = "/swagger-ui/**";
     private final UserDetailsService jwtUserDetailsService;
     private final PasswordEncoder passwordEncoder;
 
@@ -51,10 +54,10 @@ public class JwtSecurityConfig {
         httpSecurity.authorizeRequests()
                 .antMatchers(AUTHENTICATION_URL).permitAll()
                 .antMatchers("/tickets/free").permitAll()
-                .antMatchers("/tickets/statistic/").hasAnyRole(Customer.Role.AGENT.toString())//Проданные билеты не должны отображаться в списке у представителя, если в запросе не был передан соответствующий флаг
-                .antMatchers(HttpMethod.POST, "/tickets/confirm").hasAuthority(Customer.Role.SALESMAN.toString())
+                .antMatchers("/tickets/stat/").hasAnyRole(Customer.Role.AGENT.toString())
                 .antMatchers(HttpMethod.POST, "/tickets/reserve").hasAuthority(Customer.Role.USER.toString())
-                .antMatchers(HttpMethod.POST, "/tickets/purchase").hasAuthority(Customer.Role.USER.toString())
+                .antMatchers(HttpMethod.POST, "/tickets/status").hasAuthority(Customer.Role.SALESMAN.toString())
+                .antMatchers(HttpMethod.POST, "/tickets/order").hasAuthority(Customer.Role.USER.toString())
                 .anyRequest().authenticated();
         return httpSecurity.build();
     }

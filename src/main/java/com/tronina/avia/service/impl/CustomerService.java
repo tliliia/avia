@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,12 +37,12 @@ public class CustomerService {
         Customer customer = Customer.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Customer.Role.USER)
+                .role(dto.getRole())
                 .build();
         try {
             repository.save(customer);
         } catch (DataIntegrityViolationException e) {
-//                throw new UserAlreadyExistException(dto.getEmail());
+                throw new UserAlreadyExistException(dto.getEmail());
         }
         Map<String, String> jwtToken = securityService.generateToken(customer.getEmail(), customer.getRole().toString(), null);
         return new AuthCustomer(jwtToken.get(JwtTokenService.TOKEN_KEY));
