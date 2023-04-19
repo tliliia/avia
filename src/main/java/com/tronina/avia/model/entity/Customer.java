@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
@@ -30,9 +27,13 @@ public class Customer extends BaseEntity {
         USER
         }
 
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String hashPassword;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 }

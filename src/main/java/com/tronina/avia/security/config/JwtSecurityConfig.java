@@ -39,7 +39,7 @@ public class JwtSecurityConfig {
         httpSecurity.cors().disable();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilter(tokenAuthenticationFilter);
-        httpSecurity.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeRequests()
                 .antMatchers(AUTHENTICATION_URL).permitAll()
                 .antMatchers("/tickets/**").authenticated();
