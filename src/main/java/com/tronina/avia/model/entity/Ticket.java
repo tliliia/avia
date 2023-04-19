@@ -1,4 +1,4 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model.entity;
 
 import lombok.*;
 
@@ -33,4 +33,13 @@ public class Ticket extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "flight_id")
     private Flight flight;
+
+    @Override
+    public BaseEntity updateFields(BaseEntity from) {
+        return from;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }
