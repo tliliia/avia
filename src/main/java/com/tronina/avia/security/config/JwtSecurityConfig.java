@@ -27,7 +27,7 @@ public class JwtSecurityConfig {
 
     @Autowired
     public void bindUserDetailsServiceAndPasswordEncoder(AuthenticationManagerBuilder builder) throws Exception {
-        //заинжектится к public JwtAuthenticationFilter(ObjectMapper objectMapper,AuthenticationConfiguration authenticationConfiguration)
+        //заинжектится к public JwtAuthenticationFilter(AuthenticationConfiguration authenticationConfiguration)
         builder.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder);
     }
 

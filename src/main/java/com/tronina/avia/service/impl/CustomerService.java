@@ -23,7 +23,7 @@ public class CustomerService {
             try {
                 repository.save(customer);
             } catch (DataIntegrityViolationException e) {
-                throw new UserAlreadyExistException(dto.getEmail());
+//                throw new UserAlreadyExistException(dto.getEmail());
             }
         }
 }

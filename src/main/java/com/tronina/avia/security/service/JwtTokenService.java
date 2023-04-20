@@ -46,8 +46,6 @@ public class JwtTokenService {
     }
 
     public Map<String, String> generateToken(String subject, String authority, String issuer) {
-        Algorithm algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
-
         String accessToken = JWT.create()
                 .withSubject(subject)
                 .withExpiresAt(new Date(System.currentTimeMillis() + TOKEN_EXPIRES_TIME))
