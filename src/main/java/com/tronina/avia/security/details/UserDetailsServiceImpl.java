@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         final Customer user = repository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + email + " not found"));
         return new UserDetailsImpl(user.getId(), email, user.getHashPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(JwtTokenService.ROLE)));
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
     }
 
 }
