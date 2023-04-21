@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 public class JwtTokenService {
-    private static final long TOKEN_EXPIRES_TIME = 20 * 60 * 1000; // in MINUTES
+    private static final long TOKEN_EXPIRES_TIME = 500 * 60 * 1000; // in MINUTES
     private static final String BEARER = "Bearer ";
     public static final String ROLE = "role";
 
@@ -31,7 +32,7 @@ public class JwtTokenService {
     private Algorithm algorithm;
 
     @PostConstruct
-    public void init(){
+    public void init() {
         algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -59,14 +60,14 @@ public class JwtTokenService {
     public UsernamePasswordAuthenticationToken buildAuthentication(HttpServletRequest request) throws JWTVerificationException {
         String token = getToken(request);
         JWTVerifier jwtVerifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
+        DecodedJWT decodedJWT = jwtVerifier.verify(token);//expiredate error
         String email = decodedJWT.getSubject();
         String role = decodedJWT.getClaim(ROLE).asString();
+        Date expireDate = decodedJWT.getExpiresAt();
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(email, null,
-                        Collections.singleton(new SimpleGrantedAuthority(role)));
-        return authenticationToken;
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(email, null,
+                            Collections.singleton(new SimpleGrantedAuthority(role)));
+            return authenticationToken;
     }
-
 }

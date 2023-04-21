@@ -7,6 +7,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,6 +25,7 @@ import java.util.Collections;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenService jwtTokenService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -35,6 +38,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         try {
             UsernamePasswordAuthenticationToken authenticationToken = jwtTokenService.buildAuthentication(request);
+//            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             chain.doFilter(request, response);
         } catch (JWTVerificationException e) {
