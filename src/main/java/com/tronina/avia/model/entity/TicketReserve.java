@@ -12,17 +12,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 //@EqualsAndHashCode(callSuper = false, of = "number")
-@Table(name = "order")
+@Table(name = "reservation")
 @Entity
-public class TicketOrder extends BaseEntity {
+public class TicketReserve extends BaseEntity {
 
     @OneToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-
-
-    @Column(name = "price")
-    private BigDecimal totalPrice;
+    @Column(name = "reserved_until")
+    private LocalDateTime reservationEndTime;
 
 }

@@ -3,6 +3,7 @@ package com.tronina.avia.service.impl;
 import com.tronina.avia.exception.NotFoundEntityException;
 import com.tronina.avia.model.dto.TicketDto;
 import com.tronina.avia.model.entity.Flight;
+import com.tronina.avia.model.entity.Promo;
 import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.model.mapper.TicketMapper;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.parser.Entity;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -26,7 +28,9 @@ public class TicketService {
     private final TicketRepository repository;
     private final LoggingService logging;
     private final TicketMapper mapper = TicketMapper.INSTANCE;
-    
+    private final PromoService promoService;
+    private final ReservationService reservationService;
+
     @Value("${ticket.comission}")
     private String ticketComission;
 
@@ -37,13 +41,13 @@ public class TicketService {
 
     //user
     @Transactional
-    public TicketDto reserveTicket(Long id) {
-        Optional<Ticket> optionalE = repository.findById(id);
-        if (optionalE.isPresent()) {
-            return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVED));
-        } else {
-            throw new RuntimeException("Error");
+    public void reserveTicket(Long id) {
+        boolean isFree = reservationService.isFree(id);
+        if (!isFree) {
+            throw new RuntimeException("Билет уже забронирован");
         }
+        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        reservationService.doReservation(ticket);
     }
 
     @Transactional
@@ -91,14 +95,31 @@ public class TicketService {
         return repository.save(entity);
     }
 
+    public TicketDto applyPromo(TicketDto dto, String title) {
+        Promo promo = promoService.findByTitle(title);
+        Ticket entity = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundEntityException(0l));
+        BigDecimal totalPrice = applyPromo(applyComission(entity.getPrice(), entity.isCommission()), promo);
+        entity.setPrice(totalPrice);
+        return mapper.toDto(entity);
+    }
 
     private Ticket applyComission(Ticket entity) {
-        Double multiplyer = 1L + Double.parseDouble(ticketComission);
-        entity.setPrice(entity.getPrice().multiply(BigDecimal.valueOf(multiplyer)));
         entity.setCommission(true);
+        entity.setPrice(applyComission(entity.getPrice(), true));
         return entity;
     }
 
+    private BigDecimal applyComission(BigDecimal base, boolean needApply) {
+        double multiplyer = 1.0;
+        if (needApply) {
+            multiplyer += Double.parseDouble(ticketComission);
+        }
+        return base.multiply(BigDecimal.valueOf(multiplyer));
+    }
+
+    private BigDecimal applyPromo(BigDecimal base, Promo promo) {
+        return base.multiply(BigDecimal.valueOf(promo.getPercent()));
+    }
 
     public List<TicketDto> buildTicketsForFligth(Integer seats, Flight entity, BigDecimal baseRate) {
         //crete tickets with plane.seatsNo + comission
