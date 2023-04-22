@@ -1,5 +1,6 @@
 package com.tronina.avia.security.config;
 
+import com.tronina.avia.model.entity.Customer;
 import com.tronina.avia.security.filters.JwtAuthorizationFilter;
 import com.tronina.avia.security.filters.TokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class JwtSecurityConfig {
-    public static final String AUTHENTICATION_URL = "/jwttoken/**" ;
+    public static final String AUTHENTICATION_URL = "/jwttoken" ;
     private final UserDetailsService jwtUserDetailsService;
     private final PasswordEncoder passwordEncoder;
 
@@ -42,17 +43,13 @@ public class JwtSecurityConfig {
         httpSecurity.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeRequests()
                 .antMatchers(AUTHENTICATION_URL).permitAll()
-                .antMatchers("/tickets/**").authenticated();
+                .antMatchers("/tickets/free").permitAll()
+                .antMatchers("/tickets/statistic/").hasAnyRole(Customer.Role.AGENT.toString())//Проданные билеты не должны отображаться в списке у представителя, если в запросе не был передан соответствующий флаг
+                .antMatchers(HttpMethod.POST, "/tickets/confirm").hasAuthority(Customer.Role.SALESMAN.toString())
+                .antMatchers(HttpMethod.POST, "/tickets/reserve").hasAuthority(Customer.Role.USER.toString())
+                .antMatchers(HttpMethod.POST, "/tickets/purchase").hasAuthority(Customer.Role.USER.toString())
+                .anyRequest().authenticated();
         return httpSecurity.build();
-//        .authorizeHttpRequests()
-//                .requestMatchers("/", "/authenticate").permitAll()
-//                .anyRequest().hasRole(USER).and()
-//        httpSecurity.authorizeRequests()
-//                .antMatchers("/api/login/**").permitAll()
-//                .antMatchers(HttpMethod.POST, STUDENTS_API).hasAuthority("ADMIN")
-//                .antMatchers(HttpMethod.PUT, STUDENTS_API).hasAuthority("ADMIN")
-//                .antMatchers(HttpMethod.DELETE, STUDENTS_API).hasAuthority("ADMIN")
-//                .antMatchers(HttpMethod.GET, STUDENTS_API).authenticated();
     }
 
 }

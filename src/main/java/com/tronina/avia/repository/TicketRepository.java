@@ -1,6 +1,5 @@
 package com.tronina.avia.repository;
 
-import com.tronina.avia.model.entity.Airplane;
 import com.tronina.avia.model.entity.Ticket;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

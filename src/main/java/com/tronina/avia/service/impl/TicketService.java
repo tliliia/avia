@@ -30,9 +30,6 @@ public class TicketService {
     private final ReservationService reservationService;
     private final OrderService orderService;
 
-    @Value("${ticket.comission}")
-    private String ticketComission;
-
     //non auth
     public List<TicketDto> findAllAvailableTickets(boolean status) {//todo:
         return mapper.toDtoList(repository.findAllAvailable());
@@ -48,12 +45,13 @@ public class TicketService {
 
     @Transactional
     public TicketDto confirmReservation(TicketDto dto, boolean confirmed) {
-        Ticket ticket = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundEntityException(dto.getId()));
-            if (confirmed) {
-                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVATION_CONFIRMED));
-            } else {
-                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.CREATED));
-            }
+//        Ticket ticket = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundEntityException(dto.getId()));
+//            if (confirmed) {
+//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVATION_CONFIRMED));
+//            } else {
+//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.CREATED));
+//            }
+        return null;
     }
 
     @Transactional
@@ -110,7 +108,7 @@ public class TicketService {
         return repository.countTicketsFromAirline(name);
     }
 
-    public Long countAvgOfComission() {//TODO: она теперь в заказе
+    public Long countAvgOfComission() {//TODO: на теперь в заказе
         return repository.countAvgOfComission();
     }
 

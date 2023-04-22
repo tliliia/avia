@@ -1,5 +1,6 @@
 package com.tronina.avia.service.impl;
 
+import com.tronina.avia.exception.NotAvailableForReservation;
 import com.tronina.avia.model.entity.Customer;
 import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
@@ -19,8 +20,11 @@ public class ReservationService {
     @Value("${ticket.reserve}")
     private String ticketReserveMinutes;
 
-    private boolean isFree(Long id) {
-        Optional<TicketReserve> optionalE = repository.findById(id);
+    private boolean isFree(Ticket ticket) {
+        if (ticket.getStatus() != Status.CREATED) {
+            return false;
+        }
+        Optional<TicketReserve> optionalE = repository.findById(ticket.getId());
         if (!optionalE.isPresent()) {
             return true;
         } else {
@@ -34,9 +38,8 @@ public class ReservationService {
     }
 
     public void doReservation(Ticket ticket, Customer customer) {
-        boolean isFree = isFree(ticket.getId());
-        if (!isFree || ticket.getStatus() != Status.CREATED) {
-            throw new RuntimeException("Билет не доступен для  бронирования");
+        if (!isFree(ticket)) {
+            throw new NotAvailableForReservation(ticket.getId());
         }
         repository.save(TicketReserve.builder()
                 .ticket(ticket)

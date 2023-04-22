@@ -24,7 +24,8 @@ public class Customer extends BaseEntity {
         ADMIN,
         AGENT,
         SALESMAN,
-        USER
+        USER,
+        MANAGER
         }
 
     @Column(name = "email", nullable = false, unique = true)

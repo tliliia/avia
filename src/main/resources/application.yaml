@@ -11,6 +11,7 @@ spring:
     show-sql: true
 ticket:
   comission: 0.025
+  reserve: 5
 jwt:
   secret: secret
   duration: 20
