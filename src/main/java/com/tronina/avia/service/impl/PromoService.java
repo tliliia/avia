@@ -14,12 +14,7 @@ import java.util.Optional;
 public class PromoService {
     private final PromoRepository repository;
 
-    Promo findByTitle(String title) {
-        Optional<Promo> optionalE = repository.findByTitle(title);
-        if (optionalE.isPresent()) {
-            return optionalE.get();
-        } else {
-            throw new NotFoundEntityException(0l);
-        }
+    Optional<Promo> findByTitle(String title) {
+        return repository.findByTitle(title);
     }
 }

@@ -1,11 +1,8 @@
 package com.tronina.avia.controller;
 
 import com.tronina.avia.model.dto.TicketDto;
-import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.service.impl.TicketService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +49,7 @@ public class TicketController {
 
     @GetMapping("/tickets")
     public ResponseEntity<List<TicketDto>>showFreeTickets() {
-        return ResponseEntity.ok(service.finadAllAvailableTickets(true));
+        return ResponseEntity.ok(service.findAllAvailableTickets(true));
     }
 
     @PutMapping("/tickets/{id}/target")

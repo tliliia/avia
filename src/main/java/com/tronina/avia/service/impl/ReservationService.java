@@ -1,5 +1,7 @@
 package com.tronina.avia.service.impl;
 
+import com.tronina.avia.model.entity.Customer;
+import com.tronina.avia.model.entity.Status;
 import com.tronina.avia.model.entity.Ticket;
 import com.tronina.avia.model.entity.TicketReserve;
 import com.tronina.avia.repository.ReservationRepository;
@@ -17,13 +19,13 @@ public class ReservationService {
     @Value("${ticket.reserve}")
     private String ticketReserveMinutes;
 
-    public boolean isFree(Long id) {
-        Optional<TicketReserve> optionalE =  repository.findById(id);
+    private boolean isFree(Long id) {
+        Optional<TicketReserve> optionalE = repository.findById(id);
         if (!optionalE.isPresent()) {
             return true;
         } else {
             final TicketReserve reservation = optionalE.get();
-            boolean expired =  reservation.getReservationEndTime().isAfter(LocalDateTime.now());
+            boolean expired = reservation.getExpiredAt().isAfter(LocalDateTime.now());
             if (expired) {
                 repository.delete(reservation);
             }
@@ -31,10 +33,15 @@ public class ReservationService {
         }
     }
 
-    public void doReservation(Ticket ticket) {
+    public void doReservation(Ticket ticket, Customer customer) {
+        boolean isFree = isFree(ticket.getId());
+        if (!isFree || ticket.getStatus() != Status.CREATED) {
+            throw new RuntimeException("Билет не доступен для  бронирования");
+        }
         repository.save(TicketReserve.builder()
                 .ticket(ticket)
-                .reservationEndTime(LocalDateTime.now().plusMinutes(Long.parseLong(ticketReserveMinutes)))
+                .customer(customer)
+                .expiredAt(LocalDateTime.now().plusMinutes(Long.parseLong(ticketReserveMinutes)))
                 .build());
     }
 }

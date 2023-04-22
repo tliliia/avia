@@ -8,11 +8,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class CustomerService {
     private final CustomersRepository repository;
     private final PasswordEncoder passwordEncoder;
+
+    public Optional<Customer> loadByEmail(String email) {
+        return repository.findByEmail(email);
+    }
 
     public void register(Customer dto) throws UserAlreadyExistException {
             Customer customer = Customer.builder()
