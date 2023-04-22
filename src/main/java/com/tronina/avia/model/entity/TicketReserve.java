@@ -20,7 +20,7 @@ public class TicketReserve extends BaseEntity {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    @Column(name = "reserved_until")
-    private LocalDateTime reservationEndTime;
+    @Column(name = "expired_time")
+    private LocalDateTime expiredAt;
 
 }
