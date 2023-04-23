@@ -3,6 +3,7 @@ package com.tronina.avia.service.impl;
 import com.tronina.avia.exception.NotFoundEntityException;
 import com.tronina.avia.model.dto.AirlineDto;
 import com.tronina.avia.model.dto.AirplaneDto;
+import com.tronina.avia.model.dto.FlightDto;
 import com.tronina.avia.model.entity.Airline;
 import com.tronina.avia.model.mapper.AirlineMapper;
 import com.tronina.avia.repository.AirlineRepository;
@@ -37,6 +38,10 @@ public class AirlineService {
         } else {
             throw new NotFoundEntityException(id);
         }
+    }
+
+    public FlightDto addFligth(Long id, FlightDto element) {
+        return planeService.addFligth(id, element);
     }
 
     //crud

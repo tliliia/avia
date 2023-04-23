@@ -2,6 +2,7 @@ package com.tronina.avia.controller;
 
 import com.tronina.avia.model.dto.AirlineDto;
 import com.tronina.avia.model.dto.AirplaneDto;
+import com.tronina.avia.model.dto.FlightDto;
 import com.tronina.avia.service.impl.AirlineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,11 @@ public class AirlineController {
     @PostMapping("/{id}/airplane")
     public ResponseEntity<AirplaneDto> addAirplane(@PathVariable(name = "id") Long id, @RequestBody AirplaneDto element) {
         return new ResponseEntity(service.addPlaneToAirline(id, element), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/flight/{planeid}")
+    public ResponseEntity<AirplaneDto> addFlight(@PathVariable(name = "planeid") Long id, @RequestBody FlightDto element) {
+        return new ResponseEntity(service.addFligth(id, element), HttpStatus.CREATED);
     }
 
     //crud

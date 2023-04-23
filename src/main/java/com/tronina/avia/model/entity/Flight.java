@@ -40,8 +40,8 @@ public class Flight extends BaseEntity {
     @Override
     public BaseEntity updateFields(BaseEntity from) {
         if (from instanceof Flight) {
-            this.setDeparture(((Flight) from).departure);
-            this.setDestination(((Flight) from).destination);
+            this.setDeparture(((Flight) from).getDeparture());
+            this.setDestination(((Flight) from).getDestination());
             this.setDepartureTime(((Flight) from).getDepartureTime());
             this.setArrivalTime(((Flight) from).getArrivalTime());
         }
