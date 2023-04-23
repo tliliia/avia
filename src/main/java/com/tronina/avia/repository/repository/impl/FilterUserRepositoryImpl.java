@@ -21,18 +21,15 @@ public class FilterUserRepositoryImpl implements FilterTicketRepository {
 
     @Override
     public List<Ticket> findAllByFilter(TicketFilter filter) {
-        BooleanBuilder predicate = new BooleanBuilder();
-
         QPredicates predicate = QPredicates.builder()
-//            .add(filter.getAirlineName(), ticket.price.between(filter.getMinPrice(), filter.getMaxPrice()))
+            .add(filter.getAirlineName(), ticket.flight.airplane.airline.name::equalsIgnoreCase)
             .build();
         return new JPAQuery<Ticket>(entityManager)
                 .select(ticket)
                 .from(ticket)
-//                .join(ticket.flight, ticket)
-//                .where(QFlight.flight.departure.equalsIgnoreCase(filter.getFligthDeparture()))
-//                .where(QFlight.flight.destination.equalsIgnoreCase(filter.getFligthDestination()))
-                .where(QAirline.airline.name.equalsIgnoreCase(filter.getAirlineName()))
+                .join(ticket.flight, ticket)
+//                .join(flight.airplane, ticket)
+                .where(predicate)
                 .fetch();
     }
 
