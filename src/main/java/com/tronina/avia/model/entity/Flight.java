@@ -1,12 +1,10 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model.entity;
 
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -38,4 +36,15 @@ public class Flight extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
     private Set<Ticket> tickets = new HashSet<>();
+
+    @Override
+    public BaseEntity updateFields(BaseEntity from) {
+        if (from instanceof Flight) {
+            this.setDeparture(((Flight) from).departure);
+            this.setDestination(((Flight) from).destination);
+            this.setDepartureTime(((Flight) from).getDepartureTime());
+            this.setArrivalTime(((Flight) from).getArrivalTime());
+        }
+        return this;
+    }
 }

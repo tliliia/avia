@@ -1,6 +1,6 @@
 package com.tronina.avia.repository;
 
-import com.tronina.avia.entity.BaseEntity;
+import com.tronina.avia.model.entity.BaseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
