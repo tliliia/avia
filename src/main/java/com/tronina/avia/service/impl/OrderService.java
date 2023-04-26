@@ -18,16 +18,15 @@ public class OrderService {
     private final OrderRepository repository;
     private final PromoService promoService;
 
-    public Optional<TicketOrder> findByid(Long id) {
-        return repository.findById(id);
-    }
-
     public void makeOrder(Ticket ticket, Customer customer, String title) {
-        Optional<Promo> optionalPromo = promoService.findByTitle(title);
-        BigDecimal price = PriceUtil.applyPromo(
-                PriceUtil.applyComission(ticket.getPrice(), ticket.isCommission()),
-                optionalPromo);
-
+        Promo promo = promoService.getByTitle(title);
+        BigDecimal price =
+                PriceUtil.applyPromo(
+                    PriceUtil.applyComission(
+                            ticket.getPrice(),
+                            ticket.isCommission()),
+                    promo);
+        promoService.changeActualUsage(promo.getTitle());
         repository.save(TicketOrder.builder()
                 .ticket(ticket)
                 .customer(customer)
