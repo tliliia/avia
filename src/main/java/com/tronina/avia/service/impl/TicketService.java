@@ -1,5 +1,6 @@
 package com.tronina.avia.service.impl;
 
+import com.tronina.avia.config.PriceUtil;
 import com.tronina.avia.exception.NotFoundEntityException;
 import com.tronina.avia.model.dto.TicketDto;
 import com.tronina.avia.model.entity.Customer;
@@ -24,6 +25,7 @@ public class TicketService {
     private final ReservationService reservationService;
     private final CustomerService customerService;
     private final OrderService orderService;
+    private final PriceUtil priceUtil;
 
     private final TicketMapper mapper = TicketMapper.INSTANCE;
 
