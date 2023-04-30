@@ -19,7 +19,7 @@ public class PromoService {
         Promo promo = repository.findByTitle(title).orElseThrow(() -> new NotFoundEntityException(1l));
         if (promo.getExpireDate().isBefore(LocalDateTime.now()) ||
             promo.getMaxUsage() < promo.getActualUsage()) {
-//            throw new PromoException(title);
+            throw new PromoException(title);
         }
         return promo;
     }
