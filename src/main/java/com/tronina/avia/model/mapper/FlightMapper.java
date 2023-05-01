@@ -15,13 +15,13 @@ import java.util.List;
 public interface FlightMapper {
     FlightMapper INSTANCE = Mappers.getMapper(FlightMapper.class);
 
-    @Mapping(target = "tickets", ignore = true)
-    @Mapping(target = "airplane", ignore = true)
+    @InheritInverseConfiguration
     FlightDto toDto(Flight e);
 
     List<FlightDto> toDtoList(List<Flight> e);
 
-    @InheritInverseConfiguration
+    @Mapping(target = "tickets", ignore = true)
+    @Mapping(target = "airplane", ignore = true)
     Flight toEntity(FlightDto dto);
 }
 
