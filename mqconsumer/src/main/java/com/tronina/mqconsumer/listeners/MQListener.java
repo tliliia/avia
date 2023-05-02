@@ -11,22 +11,16 @@ import java.net.URLConnection;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MQListener {
+    private final EmailService emailService;
 
     @RabbitListener(queues = "#{queue.name}", containerFactory = "containerFactory")
     public void onMessage(Message message) {
         try {
-            String fileUrl = new String(message.getBody());
-            log.info("Current thread {} start work with {}", Thread.currentThread().getName(), fileUrl);
-            URL url = new URL(fileUrl);
-
-            URLConnection urlConnection = url.openConnection();
-            long size = urlConnection.getContentLength();
-            log.info("File {} size is {}", fileUrl, size);
-
-            if (size == -1) {
-                throw new AmqpRejectAndDontRequeueException(fileUrl);
-            }
+            String email = new String(message.getBody());
+            log.info("Current thread {} start work with {}", Thread.currentThread().getName(), email);
+            emailService.sen
         } catch (Exception e) {
             throw new AmqpRejectAndDontRequeueException(e);
         }
