@@ -1,4 +1,4 @@
-package com.tronina.avia.entity;
+package com.tronina.avia.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,4 +17,8 @@ public abstract class BaseEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   protected Long id;
+
+  public BaseEntity updateFields(BaseEntity from) {
+      return from;
+  }
 }

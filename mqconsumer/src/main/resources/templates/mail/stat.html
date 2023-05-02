@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Наименование авиалинии</th>
+        <th>Комиссия сервису</th>
+    </tr>
+    <tr th:block th:each="item : ${statlist}">
+        <td id="center" th:text="${item.id}"></td>
+        <td id="center" th:text="${item.name}"></td>
+        <td id="center" th:text="${item.comission}"></td>
+    </tr>
+</table>
+
+</body>
+</html>
