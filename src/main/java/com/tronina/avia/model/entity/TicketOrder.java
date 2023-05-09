@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-//@EqualsAndHashCode(callSuper = false, of = "number")
+@EqualsAndHashCode(callSuper = false, of = "ticket_id")
 @Table(name = "order")
 @Entity
 public class TicketOrder extends BaseEntity {
@@ -19,10 +19,6 @@ public class TicketOrder extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
-
-    @OneToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 
     @Column(name = "price")
     private BigDecimal totalPrice;

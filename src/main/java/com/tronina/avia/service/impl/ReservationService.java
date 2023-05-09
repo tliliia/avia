@@ -20,16 +20,15 @@ public class ReservationService {
     @Value("${ticket.reserve}")
     private String ticketReserveMinutes;
 
-    private boolean isFree(Ticket ticket) {
-        if (ticket.getStatus() != Status.CREATED) {
-            return false;
-        }
+    public boolean isFree(Ticket ticket) {
         Optional<TicketReserve> optionalE = repository.findById(ticket.getId());
         if (!optionalE.isPresent()) {
+        //Если в таблице с резервом нет строки на данный билет, то он свободен
             return true;
         } else {
             final TicketReserve reservation = optionalE.get();
             boolean expired = reservation.getExpiredAt().isAfter(LocalDateTime.now());
+            //По истечению времени бронирования бронь должна слетать и билет должен быть доступен к повторному бронированию
             if (expired) {
                 repository.delete(reservation);
             }
@@ -43,7 +42,7 @@ public class ReservationService {
         }
         repository.save(TicketReserve.builder()
                 .ticket(ticket)
-                .customer(customer)
+//                .customer(customer)
                 .expiredAt(LocalDateTime.now().plusMinutes(Long.parseLong(ticketReserveMinutes)))
                 .build());
     }

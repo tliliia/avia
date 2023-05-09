@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(callSuper = false, of = "number")
+@EqualsAndHashCode(callSuper = false, of = {"number","flight_id"})
 @Table(name = "tickets")
 @Entity
 public class Ticket extends BaseEntity {

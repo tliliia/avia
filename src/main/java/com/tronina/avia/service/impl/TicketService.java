@@ -1,6 +1,7 @@
 package com.tronina.avia.service.impl;
 
 import com.tronina.avia.config.PriceUtil;
+import com.tronina.avia.exception.NotAvailableForReservation;
 import com.tronina.avia.exception.NotFoundEntityException;
 import com.tronina.avia.model.dto.TicketDto;
 import com.tronina.avia.model.entity.Customer;
@@ -76,34 +77,39 @@ public class TicketService {
     @Transactional
     public void doReservation(Long id, Customer customer) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
-        reservationService.doReservation(ticket, customer);
+        if (reservationService.isFree(ticket) && !orderService.wasSold(ticket)) {
+            reservationService.doReservation(ticket, customer);
+        }
     }
 
     //Кассир - может продавать билеты, а также снимать статус “забронирован”
     @Transactional
     public TicketDto confirmReservation(Long id, boolean confirmed) {
-//        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
-//            if (confirmed) {
-//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.RESERVATION_CONFIRMED));
-//            } else {
-//                return mapper.toDto(changeTicketStatus(optionalE.get(), Status.CREATED));
-//            }
-        return null;
+
+        Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
+        if (reservationService.isFree(ticket) && !orderService.wasSold(ticket)) {
+            throw new NotAvailableForReservation(ticket.getId());
+        } else {
+            if (confirmed) {
+                return mapper.toDto(changeTicketStatus(ticket, Status.RESERVATION_CONFIRMED));
+            } else {
+                return mapper.toDto(changeTicketStatus(ticket, Status.CREATED));
+            }
+        }
     }
 
     @Transactional
-    public void makeOrder(Long id, Customer customer, String promo) {
+    public TicketDto makeOrder(Long id, Customer customer, String promo) {
         Ticket ticket = repository.findById(id).orElseThrow(() -> new NotFoundEntityException(id));
-        orderService.makeOrder(ticket, customer, promo);
+        if (ticket.getStatus() == Status.RESERVATION_CONFIRMED) {
+            orderService.makeOrder(ticket, customer, promo);
+        }
+        return mapper.toDto(changeTicketStatus(ticket, Status.SOLD));
     }
 
     @Transactional
     protected Ticket changeTicketStatus(Ticket entity, Status status) {
-//            entity.setCustomer();
         switch (status) {
-            case RESERVED:
-                entity.setStatus(Status.RESERVED);
-                break;
             case RESERVATION_CONFIRMED:
                 entity.setStatus(Status.RESERVATION_CONFIRMED);
                 break;

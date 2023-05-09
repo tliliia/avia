@@ -57,7 +57,7 @@ public class TicketController {
     @Operation(summary = "Покупатель - может забронировать билет, но не может купить до подтверждения кассиром")
     @PreAuthorize("hasAuthority('USER')")
     @PostMapping("reserve/{id}")
-    public ResponseEntity<?>doReservation(@PathVariable Long id, @AuthenticationPrincipal Customer customer) {
+    public ResponseEntity doReservation(@PathVariable Long id, @AuthenticationPrincipal Customer customer) {
         service.doReservation(id, customer);
         return ResponseEntity.ok().build();
     }
@@ -65,16 +65,14 @@ public class TicketController {
     @Operation(summary = "Кассир может подтвердить а также снимать статус “забронирован”")
     @PreAuthorize("hasAuthority('SALESMAN')")
     @PostMapping("status/{id}")
-    public ResponseEntity<?>changeReservationStatus(@PathVariable Long id, @RequestParam boolean confirmed, @AuthenticationPrincipal Customer customer) {
-        service.confirmReservation(id, confirmed);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TicketDto> changeReservationStatus(@PathVariable Long id, @RequestParam boolean confirmed, @AuthenticationPrincipal Customer customer) {
+        return ResponseEntity.ok(service.confirmReservation(id, confirmed));
     }
 
     @Operation(summary = "Кассир может продавать билеты")
     @PreAuthorize("hasAuthority('SALESMAN')")
     @PostMapping("/order/{id}")
-    public ResponseEntity<?>makeOrder(@PathVariable Long id, @RequestParam String promo, @AuthenticationPrincipal Customer customer) {
-        service.makeOrder(id, customer, null);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TicketDto> makeOrder(@PathVariable Long id, @RequestParam String promo, @AuthenticationPrincipal Customer customer) {
+        return ResponseEntity.ok(service.makeOrder(id, customer, null));
     }
 }

@@ -30,8 +30,11 @@ public class OrderService {
         promoService.changeActualUsage(promo.getTitle());
         repository.save(TicketOrder.builder()
                 .ticket(ticket)
-                .customer(customer)
                 .totalPrice(price)
                 .build());
+    }
+
+    public boolean wasSold(Ticket ticket) {
+        return repository.findByTicketId(ticket.getId()).isPresent();
     }
 }
