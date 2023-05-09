@@ -49,16 +49,17 @@ public class JwtSecurityConfig {
         httpSecurity.csrf().disable();
         httpSecurity.cors().disable();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        httpSecurity.addFilter(tokenAuthenticationFilter);
-        httpSecurity.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+//        httpSecurity.addFilter(tokenAuthenticationFilter);
+//        httpSecurity.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.authorizeRequests()
-                .antMatchers(AUTHENTICATION_URL).permitAll()
-                .antMatchers("/tickets/free").permitAll()
-                .antMatchers("/tickets/stat/").hasAnyRole(Customer.Role.AGENT.toString())
-                .antMatchers(HttpMethod.POST, "/tickets/reserve").hasAuthority(Customer.Role.USER.toString())
-                .antMatchers(HttpMethod.POST, "/tickets/status").hasAuthority(Customer.Role.SALESMAN.toString())
-                .antMatchers(HttpMethod.POST, "/tickets/order").hasAuthority(Customer.Role.USER.toString())
-                .anyRequest().authenticated();
+                .antMatchers("/avia").permitAll();
+//                .antMatchers(AUTHENTICATION_URL).permitAll()
+//                .antMatchers("/tickets/free").permitAll()
+//                .antMatchers("/tickets/stat/").hasAnyRole(Customer.Role.AGENT.toString())
+//                .antMatchers(HttpMethod.POST, "/tickets/reserve").hasAuthority(Customer.Role.USER.toString())
+//                .antMatchers(HttpMethod.POST, "/tickets/status").hasAuthority(Customer.Role.SALESMAN.toString())
+//                .antMatchers(HttpMethod.POST, "/tickets/order").hasAuthority(Customer.Role.USER.toString())
+//                .anyRequest().authenticated();
         return httpSecurity.build();
     }
 
